@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florida HOA Shield</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.5s, color 0.5s;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Florida HOA Shield</h1>
+        <button id="toggle-mode">Toggle Dark/Light Mode</button>
+        <h2>Shield AI Assistant</h2>
+        <input type="text" id="ai-input" placeholder="Ask me...">
+        <button id="ai-submit">Ask</button>
+        <div id="ai-response" class="hidden"></div>
+
+        <h2>Legal Letter Generator</h2>
+        <textarea id="letter-input" placeholder="Enter details for letter..." rows="4"></textarea>
+        <button id="generate-letter">Generate Letter</button>
+        <div id="letter-output" class="hidden"></div>
+
+        <h2>Fine Calculator</h2>
+        <input type="number" id="fine-amount" placeholder="Enter fine amount"> 
+        <button id="calculate-fine">Calculate</button>
+        <div id="fine-output" class="hidden"></div>
+
+        <h2>Violation Tracker</h2>
+        <input type="text" id="violation-input" placeholder="Enter violation...">
+        <button id="track-violation">Track Violation</button>
+        <div id="violation-output" class="hidden"></div>
+
+        <h2>Florida Chapter 720 Law Library</h2>
+        <button id="law-library">Open Law Library</button>
+
+        <h2>Education Center</h2>
+        <button id="education-center">Open Education Center</button>
+
+        <h2>Deadline Reminders</h2>
+        <input type="date" id="reminder-date">
+        <button id="set-reminder">Set Reminder</button>
+
+        <h2>HOA Contact Directory</h2>
+        <button id="contact-directory">View Contact Directory</button>
+
+        <h2>Pro Paywall</h2>
+        <p>Content behind paywall. Please subscribe for access.</p>
+        <footer>
+            <p>Florida HOA Shield &copy; 2026</p>
+        </footer>
+    </div>
+    <script>
+        const toggleMode = document.getElementById('toggle-mode');
+        const body = document.body;
+
+        toggleMode.onclick = () => {
+            body.classList.toggle('dark-mode');
+        };
+
+        const aiSubmit = document.getElementById('ai-submit');
+        aiSubmit.onclick = () => {
+            const input = document.getElementById('ai-input').value;
+            AIResponse(input);
+        };
+
+        function AIResponse(input) {
+            const responseDiv = document.getElementById('ai-response');
+            responseDiv.innerHTML = 'Response to: ' + input;
+            responseDiv.classList.remove('hidden');
+        }
+
+        const generateLetter = document.getElementById('generate-letter');
+        generateLetter.onclick = () => {
+            const details = document.getElementById('letter-input').value;
+            document.getElementById('letter-output').innerHTML = 'Generated Letter: ' + details;
+            document.getElementById('letter-output').classList.remove('hidden');
+        };
+
+        const calculateFine = document.getElementById('calculate-fine');
+        calculateFine.onclick = () => {
+            const amount = parseFloat(document.getElementById('fine-amount').value);
+            document.getElementById('fine-output').innerHTML = 'Calculated Fine: ' + (amount * 1.1);
+            document.getElementById('fine-output').classList.remove('hidden');
+        };
+
+        const trackViolation = document.getElementById('track-violation');
+        trackViolation.onclick = () => {
+            const violation = document.getElementById('violation-input').value;
+            document.getElementById('violation-output').innerHTML = 'Tracking violation: ' + violation;
+            document.getElementById('violation-output').classList.remove('hidden');
+        };
+    </script>
+</body>
+</html>
