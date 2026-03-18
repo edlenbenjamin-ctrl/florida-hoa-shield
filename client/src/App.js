@@ -11,6 +11,7 @@ import Documents from './pages/Documents';
 import Financials from './pages/Financials';
 import Announcements from './pages/Announcements';
 import Voting from './pages/Voting';
+import Payments from './pages/Payments';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -43,6 +44,7 @@ function AppRoutes() {
           <Route path="/financials" element={<PrivateRoute><Financials /></PrivateRoute>} />
           <Route path="/announcements" element={<PrivateRoute><Announcements /></PrivateRoute>} />
           <Route path="/voting" element={<PrivateRoute><Voting /></PrivateRoute>} />
+          <Route path="/payments" element={<PrivateRoute><Payments /></PrivateRoute>} />
         </Routes>
       </main>
     </>

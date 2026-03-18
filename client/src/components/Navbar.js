@@ -11,6 +11,7 @@ const navItems = [
   { path: '/documents', label: 'Documents' },
   { path: '/financials', label: 'Financials' },
   { path: '/voting', label: 'Voting' },
+  { path: '/payments', label: 'Payments' },
 ];
 
 const Navbar = () => {

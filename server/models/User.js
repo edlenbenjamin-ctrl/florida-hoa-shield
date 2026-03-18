@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, trim: true },
     votingRights: { type: Boolean, default: true },
     isActive: { type: Boolean, default: true },
+    stripeCustomerId: { type: String },
   },
   { timestamps: true }
 );

@@ -14,6 +14,8 @@ const financialSchema = new mongoose.Schema(
     member: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     isPaid: { type: Boolean, default: false },
     paidDate: { type: Date },
+    stripeSessionId: { type: String },
+    stripePaymentId: { type: String },
   },
   { timestamps: true }
 );
