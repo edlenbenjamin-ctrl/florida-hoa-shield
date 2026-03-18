@@ -16,6 +16,8 @@ const financialSchema = new mongoose.Schema(
     paidDate: { type: Date },
     stripeSessionId: { type: String },
     stripePaymentId: { type: String },
+    paymentToken: { type: String, index: true },
+    paymentTokenExpiry: { type: Date },
   },
   { timestamps: true }
 );

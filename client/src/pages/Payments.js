@@ -14,10 +14,10 @@ const Payments = () => {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('pending');
   const [payingId, setPayingId] = useState(null);
+  const [resendingId, setResendingId] = useState(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestForm, setRequestForm] = useState({ memberId: '', amount: '', category: 'dues', description: '', dueDate: '' });
 
-  // Detect Stripe redirect result
   const params = new URLSearchParams(location.search);
   const paymentSuccess = params.get('success') === 'true';
   const paymentCanceled = params.get('canceled') === 'true';
@@ -50,8 +50,20 @@ const Payments = () => {
       const res = await api.post('/payments/create-checkout-session', { recordId });
       window.location.href = res.data.url;
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to start payment. Make sure STRIPE_SECRET_KEY is configured.');
+      alert(err.response?.data?.message || 'Failed to start payment. Ensure STRIPE_SECRET_KEY is configured.');
       setPayingId(null);
+    }
+  };
+
+  const handleResendEmail = async (recordId) => {
+    setResendingId(recordId);
+    try {
+      const res = await api.post(`/payments/resend-email/${recordId}`);
+      alert(res.data.message);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to resend email. Ensure GMAIL_USER and GMAIL_APP_PASSWORD are configured.');
+    } finally {
+      setResendingId(null);
     }
   };
 
@@ -62,6 +74,7 @@ const Payments = () => {
       setPending([res.data, ...pending]);
       setShowRequestModal(false);
       setRequestForm({ memberId: '', amount: '', category: 'dues', description: '', dueDate: '' });
+      alert(`Payment request created and email sent to member.`);
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to create payment request');
     }
@@ -82,7 +95,7 @@ const Payments = () => {
 
       {paymentSuccess && (
         <div className="card" style={{ background: '#d4edda', borderLeft: '4px solid #27ae60', color: '#155724', marginBottom: '16px' }}>
-          <strong>Payment successful!</strong> Your payment has been processed. It may take a moment to reflect below.
+          <strong>Payment successful!</strong> A receipt has been emailed to you. It may take a moment for this page to update.
         </div>
       )}
       {paymentCanceled && (
@@ -103,7 +116,7 @@ const Payments = () => {
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#27ae60' }}>
             ${history.reduce((sum, r) => sum + r.amount, 0).toLocaleString()}
           </div>
-          <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>Total Paid</div>
+          <div style={{ color: 'var(--text-muted)', marginTop: '4px' }}>Total Collected</div>
         </div>
         <div className="card" style={{ textAlign: 'center', borderTop: '4px solid var(--primary)' }}>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary)' }}>{pending.length}</div>
@@ -113,16 +126,10 @@ const Payments = () => {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        <button
-          className={`btn ${tab === 'pending' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setTab('pending')}
-        >
+        <button className={`btn ${tab === 'pending' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('pending')}>
           Pending ({pending.length})
         </button>
-        <button
-          className={`btn ${tab === 'history' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setTab('history')}
-        >
+        <button className={`btn ${tab === 'history' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('history')}>
           Payment History ({history.length})
         </button>
       </div>
@@ -137,7 +144,7 @@ const Payments = () => {
                 {isAdmin && <th>Member</th>}
                 <th>Amount</th>
                 <th>Due Date</th>
-                <th>Action</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -152,18 +159,37 @@ const Payments = () => {
                   <tr key={r._id}>
                     <td>{r.description}</td>
                     <td><span className="badge badge-warning">{r.category.replace('_', ' ')}</span></td>
-                    {isAdmin && <td>{r.member?.name || '—'} {r.member?.unit ? `(${r.member.unit})` : ''}</td>}
+                    {isAdmin && (
+                      <td>
+                        <div>{r.member?.name || '—'}</div>
+                        {r.member?.unit && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Unit {r.member.unit}</div>}
+                        {r.member?.email && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{r.member.email}</div>}
+                      </td>
+                    )}
                     <td style={{ fontWeight: 600, color: '#c0392b' }}>${r.amount.toLocaleString()}</td>
                     <td>{new Date(r.date).toLocaleDateString()}</td>
                     <td>
-                      <button
-                        className="btn btn-primary"
-                        style={{ padding: '6px 16px', fontSize: '0.9rem' }}
-                        disabled={payingId === r._id}
-                        onClick={() => handlePay(r._id)}
-                      >
-                        {payingId === r._id ? 'Redirecting...' : 'Pay Now'}
-                      </button>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        <button
+                          className="btn btn-primary"
+                          style={{ padding: '6px 14px', fontSize: '0.85rem' }}
+                          disabled={payingId === r._id}
+                          onClick={() => handlePay(r._id)}
+                        >
+                          {payingId === r._id ? 'Redirecting...' : 'Pay Now'}
+                        </button>
+                        {isAdmin && (
+                          <button
+                            className="btn btn-secondary"
+                            style={{ padding: '6px 14px', fontSize: '0.85rem' }}
+                            disabled={resendingId === r._id}
+                            onClick={() => handleResendEmail(r._id)}
+                            title="Resend payment email to member"
+                          >
+                            {resendingId === r._id ? 'Sending...' : 'Resend Email'}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -198,7 +224,12 @@ const Payments = () => {
                   <tr key={r._id}>
                     <td>{r.description}</td>
                     <td><span className="badge badge-info">{r.category.replace('_', ' ')}</span></td>
-                    {isAdmin && <td>{r.member?.name || '—'} {r.member?.unit ? `(${r.member.unit})` : ''}</td>}
+                    {isAdmin && (
+                      <td>
+                        <div>{r.member?.name || '—'}</div>
+                        {r.member?.unit && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Unit {r.member.unit}</div>}
+                      </td>
+                    )}
                     <td style={{ fontWeight: 600, color: '#27ae60' }}>${r.amount.toLocaleString()}</td>
                     <td>{r.paidDate ? new Date(r.paidDate).toLocaleDateString() : '—'}</td>
                     <td><span className="badge badge-success">Paid</span></td>
@@ -215,13 +246,16 @@ const Payments = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h2>Create Payment Request</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: 0 }}>
+              A payment email with a secure Stripe link will be sent to the member automatically.
+            </p>
             <form onSubmit={handleCreateRequest}>
               <div className="form-group">
                 <label>Member</label>
                 <select value={requestForm.memberId} onChange={(e) => setRequestForm({ ...requestForm, memberId: e.target.value })} required>
                   <option value="">Select a member...</option>
                   {members.map((m) => (
-                    <option key={m._id} value={m._id}>{m.name} {m.unit ? `(Unit ${m.unit})` : ''}</option>
+                    <option key={m._id} value={m._id}>{m.name} {m.unit ? `(Unit ${m.unit})` : ''} — {m.email}</option>
                   ))}
                 </select>
               </div>
@@ -229,7 +263,7 @@ const Payments = () => {
                 <label>Category</label>
                 <select value={requestForm.category} onChange={(e) => setRequestForm({ ...requestForm, category: e.target.value })}>
                   {['dues', 'fine', 'maintenance', 'utilities', 'insurance', 'legal', 'administrative', 'other'].map((c) => (
-                    <option key={c} value={c}>{c.replace('_', ' ')}</option>
+                    <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
                   ))}
                 </select>
               </div>
@@ -239,7 +273,7 @@ const Payments = () => {
               </div>
               <div className="form-group">
                 <label>Description</label>
-                <input type="text" value={requestForm.description} onChange={(e) => setRequestForm({ ...requestForm, description: e.target.value })} placeholder="e.g. Monthly HOA Dues - March 2026" required />
+                <input type="text" value={requestForm.description} onChange={(e) => setRequestForm({ ...requestForm, description: e.target.value })} placeholder="e.g. Monthly HOA Dues — March 2026" required />
               </div>
               <div className="form-group">
                 <label>Due Date</label>
@@ -247,7 +281,7 @@ const Payments = () => {
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowRequestModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Create Request</button>
+                <button type="submit" className="btn btn-primary">Create &amp; Send Email</button>
               </div>
             </form>
           </div>
