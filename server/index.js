@@ -34,16 +34,23 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Connect to MongoDB and start server
-mongoose
-  .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/florida-hoa-shield')
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+// Connect to MongoDB (use in-memory server if no URI provided)
+async function startServer() {
+  let uri = process.env.MONGODB_URI;
+  if (!uri) {
+    const { MongoMemoryServer } = require('mongodb-memory-server');
+    const mongod = await MongoMemoryServer.create();
+    uri = mongod.getUri();
+    console.log('Using in-memory MongoDB (no MONGODB_URI set)');
+  }
+  await mongoose.connect(uri);
+  console.log('Connected to MongoDB');
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+startServer().catch((err) => {
+  console.error('Startup error:', err);
+  process.exit(1);
+});
 
 module.exports = app;
