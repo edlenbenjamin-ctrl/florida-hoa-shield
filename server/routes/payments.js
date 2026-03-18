@@ -1,6 +1,5 @@
 const express = require('express');
 const crypto = require('crypto');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Financial = require('../models/Financial');
 const User = require('../models/User');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
@@ -10,10 +9,17 @@ const router = express.Router();
 
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is not configured. Add it to your .env file.');
+  }
+  return require('stripe')(process.env.STRIPE_SECRET_KEY);
+}
+
 // Helper: get or create Stripe customer for a user
 async function getOrCreateStripeCustomer(user) {
   if (!user.stripeCustomerId) {
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
       email: user.email,
       name: user.name,
       metadata: { userId: user._id.toString() },
@@ -26,7 +32,7 @@ async function getOrCreateStripeCustomer(user) {
 
 // Helper: build a Stripe Checkout session for a financial record
 async function buildCheckoutSession({ record, stripeCustomerId, memberEmail }) {
-  return stripe.checkout.sessions.create({
+  return getStripe().checkout.sessions.create({
     ...(stripeCustomerId ? { customer: stripeCustomerId } : { customer_email: memberEmail }),
     payment_method_types: ['card'],
     line_items: [
@@ -159,7 +165,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = getStripe().webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('Webhook signature error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
