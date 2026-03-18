@@ -40,6 +40,16 @@ const Voting = () => {
     }
   };
 
+  const handleClose = async (voteId) => {
+    if (!window.confirm('Close this vote early? This cannot be undone.')) return;
+    try {
+      await api.put(`/voting/${voteId}/close`);
+      setVotes(votes.filter((v) => v._id !== voteId));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to close vote');
+    }
+  };
+
   const handleCast = async (voteId, choice) => {
     try {
       await api.post(`/voting/${voteId}/cast`, { choice });
@@ -79,9 +89,16 @@ const Voting = () => {
                       Ends {new Date(v.endDate).toLocaleDateString()} &mdash; Created by {v.createdBy?.name}
                     </small>
                   </div>
-                  <span className={`badge badge-${isActive ? 'success' : 'default'}`}>
-                    {isActive ? 'Active' : 'Closed'}
-                  </span>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <span className={`badge badge-${isActive ? 'success' : 'default'}`}>
+                      {isActive ? 'Active' : 'Closed'}
+                    </span>
+                    {isAdmin && isActive && (
+                      <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => handleClose(v._id)}>
+                        Close Vote
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <p style={{ marginBottom: '16px', color: 'var(--text-muted)' }}>{v.description}</p>

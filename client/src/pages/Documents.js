@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const CATEGORIES = ['bylaws', 'meeting_minutes', 'financial_report', 'policy', 'form', 'legal', 'other'];
+const EMPTY_FORM = { title: '', category: 'other', description: '', fileUrl: '', fileName: '', isPublic: true };
 
 const Documents = () => {
   const { user } = useAuth();
@@ -11,7 +12,8 @@ const Documents = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ title: '', category: 'other', description: '', fileUrl: '', fileName: '', isPublic: true });
+  const [editDoc, setEditDoc] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
     const params = filter ? `?category=${filter}` : '';
@@ -21,15 +23,31 @@ const Documents = () => {
       .finally(() => setLoading(false));
   }, [filter]);
 
-  const handleCreate = async (e) => {
+  const openCreate = () => {
+    setEditDoc(null);
+    setForm(EMPTY_FORM);
+    setShowModal(true);
+  };
+
+  const openEdit = (d) => {
+    setEditDoc(d);
+    setForm({ title: d.title, category: d.category, description: d.description || '', fileUrl: d.fileUrl, fileName: d.fileName, isPublic: d.isPublic });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/documents', form);
-      setDocuments([res.data, ...documents]);
+      if (editDoc) {
+        const res = await api.put(`/documents/${editDoc._id}`, form);
+        setDocuments(documents.map((d) => (d._id === editDoc._id ? res.data : d)));
+      } else {
+        const res = await api.post('/documents', form);
+        setDocuments([res.data, ...documents]);
+      }
       setShowModal(false);
-      setForm({ title: '', category: 'other', description: '', fileUrl: '', fileName: '', isPublic: true });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to upload document');
+      alert(err.response?.data?.message || 'Failed to save document');
     }
   };
 
@@ -50,7 +68,7 @@ const Documents = () => {
       <div className="page-header">
         <h1>Document Library</h1>
         {isAdmin && (
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          <button className="btn btn-primary" onClick={openCreate}>
             + Add Document
           </button>
         )}
@@ -88,14 +106,19 @@ const Documents = () => {
                   <td>{d.description || '—'}</td>
                   <td>{d.uploadedBy?.name || '—'}</td>
                   <td>{new Date(d.createdAt).toLocaleDateString()}</td>
-                  <td>
+                  <td style={{ display: 'flex', gap: '8px' }}>
                     <a href={d.fileUrl} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '0.85rem' }}>
                       View
                     </a>
                     {isAdmin && (
-                      <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.85rem', marginLeft: '8px' }} onClick={() => handleDelete(d._id)}>
-                        Delete
-                      </button>
+                      <>
+                        <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => openEdit(d)}>
+                          Edit
+                        </button>
+                        <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => handleDelete(d._id)}>
+                          Delete
+                        </button>
+                      </>
                     )}
                   </td>
                 </tr>
@@ -108,8 +131,8 @@ const Documents = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Add Document</h2>
-            <form onSubmit={handleCreate}>
+            <h2>{editDoc ? 'Edit Document' : 'Add Document'}</h2>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Title</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
@@ -132,9 +155,16 @@ const Documents = () => {
                 <label>File Name</label>
                 <input type="text" value={form.fileName} onChange={(e) => setForm({ ...form, fileName: e.target.value })} required />
               </div>
+              <div className="form-group">
+                <label>Visibility</label>
+                <select value={form.isPublic} onChange={(e) => setForm({ ...form, isPublic: e.target.value === 'true' })}>
+                  <option value="true">Public (all members)</option>
+                  <option value="false">Private (admin only)</option>
+                </select>
+              </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save</button>
+                <button type="submit" className="btn btn-primary">{editDoc ? 'Save Changes' : 'Save'}</button>
               </div>
             </form>
           </div>

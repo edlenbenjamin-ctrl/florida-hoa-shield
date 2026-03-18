@@ -56,4 +56,15 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+// DELETE /api/financials/:id
+router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const record = await Financial.findByIdAndDelete(req.params.id);
+    if (!record) return res.status(404).json({ message: 'Record not found' });
+    res.json({ message: 'Record deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

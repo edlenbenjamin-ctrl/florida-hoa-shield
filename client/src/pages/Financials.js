@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
+const CATEGORIES = ['dues', 'fine', 'maintenance', 'utilities', 'insurance', 'legal', 'administrative', 'other'];
+const EMPTY_FORM = { type: 'income', category: 'dues', amount: '', description: '', date: '', isPaid: false };
+
 const Financials = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin' || user?.role === 'board_member';
@@ -9,7 +12,8 @@ const Financials = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ type: 'income', category: 'dues', amount: '', description: '', date: '' });
+  const [editRecord, setEditRecord] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,15 +32,48 @@ const Financials = () => {
     fetchData();
   }, [isAdmin]);
 
-  const handleCreate = async (e) => {
+  const openCreate = () => {
+    setEditRecord(null);
+    setForm(EMPTY_FORM);
+    setShowModal(true);
+  };
+
+  const openEdit = (r) => {
+    setEditRecord(r);
+    setForm({
+      type: r.type,
+      category: r.category,
+      amount: r.amount,
+      description: r.description,
+      date: r.date ? r.date.split('T')[0] : '',
+      isPaid: r.isPaid,
+    });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/financials', form);
-      setRecords([res.data, ...records]);
+      if (editRecord) {
+        const res = await api.put(`/financials/${editRecord._id}`, form);
+        setRecords(records.map((r) => (r._id === editRecord._id ? res.data : r)));
+      } else {
+        const res = await api.post('/financials', form);
+        setRecords([res.data, ...records]);
+      }
       setShowModal(false);
-      setForm({ type: 'income', category: 'dues', amount: '', description: '', date: '' });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create record');
+      alert(err.response?.data?.message || 'Failed to save record');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this financial record?')) return;
+    try {
+      await api.delete(`/financials/${id}`);
+      setRecords(records.filter((r) => r._id !== id));
+    } catch {
+      alert('Failed to delete record');
     }
   };
 
@@ -47,7 +84,7 @@ const Financials = () => {
       <div className="page-header">
         <h1>Financial Management</h1>
         {isAdmin && (
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          <button className="btn btn-primary" onClick={openCreate}>
             + Add Record
           </button>
         )}
@@ -78,11 +115,12 @@ const Financials = () => {
               <th>Description</th>
               <th>Amount</th>
               <th>Status</th>
+              {isAdmin && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
             {records.length === 0 ? (
-              <tr><td colSpan="6" style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>No financial records found.</td></tr>
+              <tr><td colSpan={isAdmin ? 7 : 6} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-muted)' }}>No financial records found.</td></tr>
             ) : (
               records.map((r) => (
                 <tr key={r._id}>
@@ -94,6 +132,16 @@ const Financials = () => {
                     {r.type === 'income' ? '+' : '-'}${r.amount.toLocaleString()}
                   </td>
                   <td><span className={`badge badge-${r.isPaid ? 'success' : 'warning'}`}>{r.isPaid ? 'Paid' : 'Pending'}</span></td>
+                  {isAdmin && (
+                    <td style={{ display: 'flex', gap: '8px' }}>
+                      <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => openEdit(r)}>
+                        Edit
+                      </button>
+                      <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => handleDelete(r._id)}>
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}
@@ -104,8 +152,8 @@ const Financials = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Add Financial Record</h2>
-            <form onSubmit={handleCreate}>
+            <h2>{editRecord ? 'Edit Financial Record' : 'Add Financial Record'}</h2>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Type</label>
                 <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
@@ -116,7 +164,7 @@ const Financials = () => {
               <div className="form-group">
                 <label>Category</label>
                 <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                  {['dues', 'fine', 'maintenance', 'utilities', 'insurance', 'legal', 'administrative', 'other'].map((c) => (
+                  {CATEGORIES.map((c) => (
                     <option key={c} value={c}>{c.replace('_', ' ')}</option>
                   ))}
                 </select>
@@ -133,9 +181,16 @@ const Financials = () => {
                 <label>Date</label>
                 <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
               </div>
+              <div className="form-group">
+                <label>Status</label>
+                <select value={form.isPaid} onChange={(e) => setForm({ ...form, isPaid: e.target.value === 'true' })}>
+                  <option value="false">Pending</option>
+                  <option value="true">Paid</option>
+                </select>
+              </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save</button>
+                <button type="submit" className="btn btn-primary">{editRecord ? 'Save Changes' : 'Save'}</button>
               </div>
             </form>
           </div>

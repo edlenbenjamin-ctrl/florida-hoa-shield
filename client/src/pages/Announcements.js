@@ -3,6 +3,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const PRIORITY_COLORS = { low: 'default', medium: 'info', high: 'warning', urgent: 'danger' };
+const EMPTY_FORM = { title: '', content: '', priority: 'medium', expiresAt: '' };
 
 const Announcements = () => {
   const { user } = useAuth();
@@ -10,7 +11,8 @@ const Announcements = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ title: '', content: '', priority: 'medium', expiresAt: '' });
+  const [editItem, setEditItem] = useState(null);
+  const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
     api.get('/announcements')
@@ -19,15 +21,36 @@ const Announcements = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCreate = async (e) => {
+  const openCreate = () => {
+    setEditItem(null);
+    setForm(EMPTY_FORM);
+    setShowModal(true);
+  };
+
+  const openEdit = (a) => {
+    setEditItem(a);
+    setForm({
+      title: a.title,
+      content: a.content,
+      priority: a.priority,
+      expiresAt: a.expiresAt ? a.expiresAt.split('T')[0] : '',
+    });
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/announcements', form);
-      setAnnouncements([res.data, ...announcements]);
+      if (editItem) {
+        const res = await api.put(`/announcements/${editItem._id}`, form);
+        setAnnouncements(announcements.map((a) => (a._id === editItem._id ? { ...a, ...res.data } : a)));
+      } else {
+        const res = await api.post('/announcements', form);
+        setAnnouncements([res.data, ...announcements]);
+      }
       setShowModal(false);
-      setForm({ title: '', content: '', priority: 'medium', expiresAt: '' });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to post announcement');
+      alert(err.response?.data?.message || 'Failed to save announcement');
     }
   };
 
@@ -48,7 +71,7 @@ const Announcements = () => {
       <div className="page-header">
         <h1>Announcements</h1>
         {isAdmin && (
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          <button className="btn btn-primary" onClick={openCreate}>
             + New Announcement
           </button>
         )}
@@ -71,9 +94,14 @@ const Announcements = () => {
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <span className={`badge badge-${PRIORITY_COLORS[a.priority]}`}>{a.priority}</span>
                   {isAdmin && (
-                    <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => handleRemove(a._id)}>
-                      Remove
-                    </button>
+                    <>
+                      <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => openEdit(a)}>
+                        Edit
+                      </button>
+                      <button className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.85rem' }} onClick={() => handleRemove(a._id)}>
+                        Remove
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -86,8 +114,8 @@ const Announcements = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>New Announcement</h2>
-            <form onSubmit={handleCreate}>
+            <h2>{editItem ? 'Edit Announcement' : 'New Announcement'}</h2>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Title</label>
                 <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
@@ -111,7 +139,7 @@ const Announcements = () => {
               </div>
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Post</button>
+                <button type="submit" className="btn btn-primary">{editItem ? 'Save Changes' : 'Post'}</button>
               </div>
             </form>
           </div>

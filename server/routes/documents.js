@@ -29,6 +29,17 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+// PUT /api/documents/:id
+router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const document = await Document.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('uploadedBy', 'name');
+    if (!document) return res.status(404).json({ message: 'Document not found' });
+    res.json(document);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // DELETE /api/documents/:id
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {

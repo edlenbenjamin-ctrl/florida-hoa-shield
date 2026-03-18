@@ -26,9 +26,24 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+// PUT /api/voting/:id/close
+router.put('/:id/close', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const vote = await Vote.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    if (!vote) return res.status(404).json({ message: 'Vote not found' });
+    res.json(vote);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // POST /api/voting/:id/cast
 router.post('/:id/cast', authMiddleware, async (req, res) => {
   try {
+    const User = require('../models/User');
+    const member = await User.findById(req.user.id);
+    if (!member || !member.votingRights) return res.status(403).json({ message: 'You do not have voting rights' });
+
     const vote = await Vote.findById(req.params.id);
     if (!vote) return res.status(404).json({ message: 'Vote not found' });
     if (new Date() > vote.endDate) return res.status(400).json({ message: 'Voting has ended' });
