@@ -90,7 +90,7 @@ const Members = () => {
             ) : (
               filtered.map((m) => (
                 <tr key={m._id}>
-                  <td><strong>{m.name}</strong>{m._id === user?.id && ' (You)'}</td>
+                  <td><strong>{m.name}</strong>{m._id === (user?._id || user?.id) && ' (You)'}</td>
                   <td>{m.email}</td>
                   <td>{m.unit || '—'}</td>
                   <td>{m.phone || '—'}</td>
