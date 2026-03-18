@@ -1,0 +1,105 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary);
+  color: white;
+  padding: 0 24px;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  gap: 16px;
+}
+
+.navbar-brand a {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-links a {
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.9);
+  white-space: nowrap;
+}
+
+.role-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.role-admin { background: var(--accent); color: #333; }
+.role-board_member { background: #27ae60; color: white; }
+.role-homeowner { background: rgba(255,255,255,0.2); color: white; }
+
+.logout-btn {
+  font-size: 0.85rem;
+  padding: 6px 14px;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+@media (max-width: 768px) {
+  .hamburger { display: block; }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--primary);
+    flex-direction: column;
+    padding: 12px;
+    gap: 4px;
+  }
+
+  .nav-links.open { display: flex; }
+
+  .navbar-user .user-name,
+  .navbar-user .role-badge { display: none; }
+}

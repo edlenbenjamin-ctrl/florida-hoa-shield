@@ -1,0 +1,49 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const morgan = require('morgan');
+require('dotenv').config();
+
+const authRoutes = require('./routes/auth');
+const memberRoutes = require('./routes/members');
+const violationRoutes = require('./routes/violations');
+const documentRoutes = require('./routes/documents');
+const financialRoutes = require('./routes/financials');
+const announcementRoutes = require('./routes/announcements');
+const votingRoutes = require('./routes/voting');
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Middleware
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
+app.use(express.json());
+app.use(morgan('dev'));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/members', memberRoutes);
+app.use('/api/violations', violationRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/financials', financialRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/voting', votingRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Connect to MongoDB and start server
+mongoose
+  .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/florida-hoa-shield')
+  .then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
+
+module.exports = app;
