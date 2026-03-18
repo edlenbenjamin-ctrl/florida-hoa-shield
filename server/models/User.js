@@ -12,6 +12,9 @@ const userSchema = new mongoose.Schema(
     votingRights: { type: Boolean, default: true },
     isActive: { type: Boolean, default: true },
     stripeCustomerId: { type: String },
+    plan: { type: String, enum: ['starter', 'growth', 'pro'], default: 'starter' },
+    subscriptionStatus: { type: String, enum: ['active', 'trialing', 'canceled', 'past_due'], default: 'trialing' },
+    trialEndsAt: { type: Date, default: () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
   },
   { timestamps: true }
 );

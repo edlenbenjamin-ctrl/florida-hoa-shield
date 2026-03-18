@@ -45,3 +45,60 @@
   color: var(--text-muted);
   font-size: 0.9rem;
 }
+
+/* ---- Plan Selector on Register ---- */
+.plan-selector {
+  margin-bottom: 20px;
+}
+
+.plan-selector label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.plan-selector-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.plan-tab {
+  flex: 1;
+  padding: 8px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  color: #888;
+}
+
+.plan-tab.active {
+  font-weight: 700;
+}
+
+.plan-selected-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plan-popular-tag {
+  font-size: 0.72rem;
+  background: #f0a500;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

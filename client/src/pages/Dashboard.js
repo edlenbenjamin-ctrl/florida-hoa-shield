@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import './Dashboard.css';
 
+const PLAN_COLORS = { starter: '#1e3a5f', growth: '#f0a500', pro: '#27ae60' };
+
 const StatCard = ({ title, value, to, color }) => (
   <Link to={to} className="stat-card" style={{ borderTopColor: color }}>
     <span className="stat-value">{value}</span>
@@ -16,16 +18,19 @@ const Dashboard = () => {
   const [stats, setStats] = useState({ members: 0, violations: 0, announcements: 0, activeVotes: 0 });
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [membersRes, violationsRes, announcementsRes, votingRes] = await Promise.all([
+        const [membersRes, violationsRes, announcementsRes, votingRes, subRes] = await Promise.all([
           api.get('/members'),
           api.get('/violations'),
           api.get('/announcements'),
           api.get('/voting'),
+          api.get('/subscription/current').catch(() => ({ data: null })),
         ]);
+        if (subRes.data) setSubscription(subRes.data);
         setStats({
           members: membersRes.data.length,
           violations: violationsRes.data.filter((v) => v.status !== 'resolved').length,
@@ -50,6 +55,33 @@ const Dashboard = () => {
         <h1>Welcome back, {user?.name?.split(' ')[0]}!</h1>
         <p>Here's what's happening in your community.</p>
       </div>
+
+      {/* Plan banner */}
+      {subscription && (
+        <div
+          className="plan-banner"
+          style={{ borderLeftColor: PLAN_COLORS[subscription.plan] || '#1e3a5f' }}
+        >
+          <div className="plan-banner-info">
+            <span className="plan-banner-badge" style={{ background: PLAN_COLORS[subscription.plan] }}>
+              {subscription.planDetails?.name || subscription.plan} Plan
+            </span>
+            {subscription.subscriptionStatus === 'trialing' && subscription.daysLeftInTrial !== null && (
+              <span className="plan-banner-trial">
+                {subscription.daysLeftInTrial} day{subscription.daysLeftInTrial !== 1 ? 's' : ''} left in trial
+              </span>
+            )}
+            {subscription.subscriptionStatus === 'active' && (
+              <span className="plan-banner-active">Active</span>
+            )}
+          </div>
+          {subscription.plan !== 'pro' && (
+            <Link to="/pricing" className="plan-banner-upgrade">
+              Upgrade Plan →
+            </Link>
+          )}
+        </div>
+      )}
 
       <div className="stats-grid">
         <StatCard title="Total Members" value={stats.members} to="/members" color="#1e3a5f" />

@@ -12,6 +12,7 @@ const financialRoutes = require('./routes/financials');
 const announcementRoutes = require('./routes/announcements');
 const votingRoutes = require('./routes/voting');
 const paymentRoutes = require('./routes/payments');
+const subscriptionRoutes = require('./routes/subscription');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,7 @@ app.use('/api/financials', financialRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/voting', votingRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/subscription', subscriptionRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
