@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
     plan: { type: String, enum: ['starter', 'growth', 'pro'], default: 'starter' },
     subscriptionStatus: { type: String, enum: ['active', 'trialing', 'canceled', 'past_due'], default: 'trialing' },
     trialEndsAt: { type: Date, default: () => new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
+    stripeSubscriptionId: { type: String },
   },
   { timestamps: true }
 );

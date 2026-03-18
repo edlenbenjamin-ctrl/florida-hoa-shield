@@ -1,0 +1,563 @@
+/* ============================================================
+   Landing Page — Florida HOA Shield
+   ============================================================ */
+
+:root {
+  --navy: #0f2441;
+  --navy-light: #1e3a5f;
+  --gold: #f0a500;
+  --green: #27ae60;
+  --text-dark: #1a1a2e;
+  --text-mid: #444;
+  --text-light: #777;
+  --border-light: #e8ecf0;
+}
+
+.landing {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+
+/* ---- Nav ---- */
+.land-nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(15, 36, 65, 0.97);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.land-nav-brand {
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+.land-nav-brand span {
+  color: var(--gold);
+}
+
+.land-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.land-nav-links a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.land-nav-links a:hover {
+  color: white;
+}
+
+.land-nav-cta {
+  background: var(--gold) !important;
+  color: var(--navy) !important;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+}
+
+/* ---- Hero ---- */
+.land-hero {
+  background: linear-gradient(160deg, var(--navy) 0%, #162d4e 60%, #1a3a5c 100%);
+  color: white;
+  padding: 96px 48px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.land-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.land-hero-inner {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.land-hero-eyebrow {
+  display: inline-block;
+  background: rgba(240, 165, 0, 0.15);
+  border: 1px solid rgba(240, 165, 0, 0.4);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.land-hero h1 {
+  font-size: 3.4rem;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.land-hero h1 em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.land-hero-sub {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.72);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+.land-hero-ctas {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+
+.btn-hero-primary {
+  background: var(--gold);
+  color: var(--navy);
+  padding: 15px 32px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 16px rgba(240, 165, 0, 0.3);
+}
+
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(240, 165, 0, 0.4);
+}
+
+.btn-hero-secondary {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  padding: 15px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-hero-secondary:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* ---- Trust bar ---- */
+.land-trust {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 40px;
+}
+
+.land-trust-item {
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.82rem;
+}
+
+.land-trust-item strong {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 2px;
+}
+
+/* ---- Section shared ---- */
+.land-section {
+  padding: 88px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.land-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.land-section-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.land-section-sub {
+  font-size: 1rem;
+  color: var(--text-light);
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+/* ---- Features ---- */
+.land-features-bg {
+  background: #f8fafc;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.land-features-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.land-features-header .land-section-sub {
+  margin: 0 auto;
+}
+
+.land-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.land-feature-card {
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 28px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.land-feature-card:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.land-feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+}
+
+.land-feature-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.land-feature-card p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* ---- How it works ---- */
+.land-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 40px;
+  margin-top: 56px;
+}
+
+.land-step {
+  position: relative;
+  text-align: center;
+}
+
+.land-step-number {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.land-step h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+}
+
+.land-step p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* ---- Pricing section ---- */
+.land-pricing-bg {
+  background: linear-gradient(160deg, var(--navy) 0%, #162d4e 100%);
+  padding: 88px 48px;
+}
+
+.land-pricing-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.land-pricing-header .land-section-title {
+  color: white;
+}
+
+.land-pricing-header .land-section-sub {
+  color: rgba(255,255,255,0.65);
+  margin: 0 auto;
+}
+
+.land-pricing-grid {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.land-plan-card {
+  background: white;
+  border-radius: 16px;
+  padding: 36px 30px;
+  flex: 1 1 280px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  border-top: 5px solid transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.land-plan-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+}
+
+.land-plan-card.popular {
+  transform: scale(1.05);
+}
+
+.land-plan-card.popular:hover {
+  transform: scale(1.05) translateY(-4px);
+}
+
+.land-popular-tag {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 16px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.land-plan-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.land-plan-price {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.land-plan-price .sym { font-size: 1.3rem; font-weight: 700; color: var(--navy); line-height: 1.6; }
+.land-plan-price .amt { font-size: 3rem; font-weight: 900; color: var(--navy); line-height: 1; }
+.land-plan-price .per { font-size: 0.9rem; color: #999; margin-bottom: 6px; }
+
+.land-plan-units {
+  font-size: 0.82rem;
+  color: #888;
+  margin-bottom: 24px;
+}
+
+.land-plan-divider { height: 1px; background: #f0f0f0; margin-bottom: 20px; }
+
+.land-plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  flex: 1;
+}
+
+.land-plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #444;
+  padding: 5px 0;
+}
+
+.land-plan-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.land-plan-btn {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.land-plan-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* ---- CTA Banner ---- */
+.land-cta-banner {
+  background: var(--gold);
+  padding: 72px 48px;
+  text-align: center;
+}
+
+.land-cta-banner h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.land-cta-banner p {
+  color: rgba(15, 36, 65, 0.7);
+  font-size: 1rem;
+  margin-bottom: 32px;
+}
+
+.btn-cta-dark {
+  background: var(--navy);
+  color: white;
+  padding: 15px 36px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 0.2s;
+}
+
+.btn-cta-dark:hover {
+  opacity: 0.85;
+}
+
+/* ---- Footer ---- */
+.land-footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+  padding: 32px 48px;
+  font-size: 0.85rem;
+}
+
+.land-footer a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+}
+
+.land-footer a:hover {
+  color: white;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .land-nav {
+    padding: 0 20px;
+  }
+
+  .land-nav-links a:not(.land-nav-cta):not(:last-child) {
+    display: none;
+  }
+
+  .land-hero {
+    padding: 64px 24px 56px;
+  }
+
+  .land-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .land-section {
+    padding: 56px 24px;
+  }
+
+  .land-plan-card.popular {
+    transform: none;
+  }
+
+  .land-pricing-bg {
+    padding: 56px 24px;
+  }
+
+  .land-cta-banner {
+    padding: 56px 24px;
+  }
+}

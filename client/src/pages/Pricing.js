@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -60,8 +60,9 @@ const FALLBACK_PLANS = [
   },
 ];
 
-const PricingCard = ({ plan, onSelect, currentPlan }) => {
+const PricingCard = ({ plan, onSelect, currentPlan, upgrading }) => {
   const isCurrent = currentPlan === plan.id;
+  const isLoading = upgrading === plan.id;
 
   return (
     <div className={`pricing-card ${plan.popular ? 'popular' : ''}`} style={{ borderTopColor: plan.color }}>
@@ -101,10 +102,11 @@ const PricingCard = ({ plan, onSelect, currentPlan }) => {
       ) : (
         <button
           className="plan-cta"
-          style={{ background: plan.color }}
+          style={{ background: plan.color, opacity: isLoading ? 0.7 : 1 }}
           onClick={() => onSelect(plan.id)}
+          disabled={isLoading || !!upgrading}
         >
-          {isCurrent ? 'Current Plan' : 'Get Started — Free 14-day Trial'}
+          {isLoading ? 'Redirecting to checkout...' : 'Get Started — Free 14-day Trial'}
         </button>
       )}
     </div>
@@ -124,10 +126,19 @@ const Pricing = () => {
     }
   }, [user]);
 
-  const handleSelect = (planId) => {
+  const [upgrading, setUpgrading] = useState(null);
+
+  const handleSelect = async (planId) => {
     if (user) {
-      // Logged-in user: upgrade flow
-      navigate(`/subscription/upgrade?plan=${planId}`);
+      // Logged-in admin: create Stripe checkout session
+      try {
+        setUpgrading(planId);
+        const res = await api.post('/subscription/create-checkout', { plan: planId });
+        window.location.href = res.data.url;
+      } catch (err) {
+        alert(err.response?.data?.message || 'Failed to start checkout. Is STRIPE_SECRET_KEY set?');
+        setUpgrading(null);
+      }
     } else {
       // Not logged in: go to register with plan pre-selected
       navigate(`/register?plan=${planId}`);
@@ -172,6 +183,7 @@ const Pricing = () => {
             plan={plan}
             onSelect={handleSelect}
             currentPlan={currentPlan}
+            upgrading={upgrading}
           />
         ))}
       </div>

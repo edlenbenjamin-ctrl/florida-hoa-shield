@@ -19,8 +19,9 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
 
-// Stripe webhook needs raw body — mount before express.json()
+// Stripe webhooks need raw body — mount before express.json()
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
+app.use('/api/subscription/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
 app.use(morgan('dev'));

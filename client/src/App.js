@@ -13,6 +13,7 @@ import Announcements from './pages/Announcements';
 import Voting from './pages/Voting';
 import Payments from './pages/Payments';
 import Pricing from './pages/Pricing';
+import Landing from './pages/Landing';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -35,7 +36,7 @@ function AppRoutes() {
       {user && <Navbar />}
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Navigate to={user ? '/dashboard' : '/login'} />} />
+          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
@@ -47,6 +48,7 @@ function AppRoutes() {
           <Route path="/voting" element={<PrivateRoute><Voting /></PrivateRoute>} />
           <Route path="/payments" element={<PrivateRoute><Payments /></PrivateRoute>} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/subscription/upgrade" element={<PrivateRoute><Pricing /></PrivateRoute>} />
         </Routes>
       </main>
     </>

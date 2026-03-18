@@ -75,11 +75,30 @@ const Dashboard = () => {
               <span className="plan-banner-active">Active</span>
             )}
           </div>
-          {subscription.plan !== 'pro' && (
-            <Link to="/pricing" className="plan-banner-upgrade">
-              Upgrade Plan →
-            </Link>
-          )}
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            {subscription.subscriptionStatus === 'active' && (
+              <button
+                className="plan-banner-upgrade"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                onClick={async () => {
+                  try {
+                    const api = (await import('../services/api')).default;
+                    const res = await api.post('/subscription/billing-portal');
+                    window.location.href = res.data.url;
+                  } catch {
+                    alert('Billing portal unavailable. Is Stripe configured?');
+                  }
+                }}
+              >
+                Manage Billing
+              </button>
+            )}
+            {subscription.plan !== 'pro' && (
+              <Link to="/pricing" className="plan-banner-upgrade">
+                Upgrade Plan →
+              </Link>
+            )}
+          </div>
         </div>
       )}
 

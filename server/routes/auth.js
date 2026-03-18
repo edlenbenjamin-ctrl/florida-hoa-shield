@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const PLANS = require('../config/plans');
 const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
@@ -22,6 +23,22 @@ router.post(
       const { name, email, password, unit, phone, plan } = req.body;
       const existing = await User.findOne({ email });
       if (existing) return res.status(400).json({ message: 'Email already registered' });
+
+      // Enforce unit limit based on the HOA admin's plan
+      const admin = await User.findOne({ role: 'admin' });
+      if (admin) {
+        const adminPlan = PLANS[admin.plan] || PLANS.starter;
+        if (adminPlan.maxUnits !== null) {
+          const currentCount = await User.countDocuments({ isActive: true });
+          if (currentCount >= adminPlan.maxUnits) {
+            return res.status(403).json({
+              message: `Your HOA has reached the ${adminPlan.maxUnits}-unit limit on the ${adminPlan.name} plan. Please upgrade to add more members.`,
+              limitReached: true,
+              currentPlan: admin.plan,
+            });
+          }
+        }
+      }
 
       const validPlans = ['starter', 'growth', 'pro'];
       const selectedPlan = validPlans.includes(plan) ? plan : 'starter';
