@@ -1,0 +1,57 @@
+const PLANS = {
+  starter: {
+    id: 'starter',
+    name: 'Starter',
+    price: 49,
+    maxUnits: 50,
+    features: [
+      'Up to 50 units',
+      'Member management',
+      'Violation tracking',
+      'Document storage',
+      'Community announcements',
+      'Online voting',
+      'Payment collection',
+      'Email notifications',
+    ],
+    color: '#1e3a5f',
+    popular: false,
+  },
+  growth: {
+    id: 'growth',
+    name: 'Growth',
+    price: 99,
+    maxUnits: 150,
+    features: [
+      'Up to 150 units',
+      'Everything in Starter',
+      'Advanced financial reports',
+      'Bulk payment requests',
+      'Priority email support',
+      'Custom announcement categories',
+      'Voting analytics',
+    ],
+    color: '#f0a500',
+    popular: true,
+  },
+  pro: {
+    id: 'pro',
+    name: 'Pro',
+    price: 199,
+    maxUnits: null,
+    features: [
+      'Unlimited units',
+      'Everything in Growth',
+      'Dedicated account manager',
+      'Phone support',
+      'Custom branding',
+      'API access',
+      'White-label option',
+      'SLA guarantee',
+    ],
+    color: '#27ae60',
+    popular: false,
+  },
+};
+
+module.exports = PLANS;
