@@ -34,7 +34,7 @@ async function getOrCreateStripeCustomer(user) {
 async function buildCheckoutSession({ record, stripeCustomerId, memberEmail }) {
   return getStripe().checkout.sessions.create({
     ...(stripeCustomerId ? { customer: stripeCustomerId } : { customer_email: memberEmail }),
-    payment_method_types: ['card'],
+    payment_method_types: ['card', 'us_bank_account'],
     line_items: [
       {
         price_data: {
