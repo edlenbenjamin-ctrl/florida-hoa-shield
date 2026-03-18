@@ -38,7 +38,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <Link to="/dashboard">Florida HOA Shield</Link>
+        <Link to="/dashboard">Florida HOA <span>Shield</span></Link>
       </div>
 
       <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>

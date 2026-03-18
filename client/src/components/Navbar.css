@@ -1,46 +1,65 @@
+/* =========================================================
+   Navbar
+   ========================================================= */
+
 .navbar {
   display: flex;
   align-items: center;
-  background-color: var(--primary);
+  background: var(--primary);
   color: white;
-  padding: 0 24px;
+  padding: 0 28px;
   height: 64px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  gap: 16px;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
 
 .navbar-brand a {
   color: white;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 800;
   text-decoration: none;
   white-space: nowrap;
+  letter-spacing: -0.3px;
+}
+
+.navbar-brand a span {
+  color: var(--accent);
 }
 
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 4px;
+  gap: 2px;
   flex: 1;
+  margin-left: 8px;
 }
 
 .nav-links a {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.7);
   text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  transition: background 0.2s, color 0.2s;
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
   white-space: nowrap;
+  display: block;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
-  background: rgba(255,255,255,0.15);
+.nav-links a:hover {
+  background: rgba(255,255,255,0.1);
   color: white;
+  text-decoration: none;
+}
+
+.nav-links a.active {
+  background: rgba(255,255,255,0.13);
+  color: white;
+  font-weight: 600;
 }
 
 .navbar-user {
@@ -48,69 +67,94 @@
   align-items: center;
   gap: 10px;
   margin-left: auto;
+  flex-shrink: 0;
 }
 
 .user-name {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.9);
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.85);
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .role-badge {
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 600;
+  font-size: 0.7rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 700;
   text-transform: capitalize;
+  letter-spacing: 0.3px;
 }
 
-.role-admin { background: var(--accent); color: #333; }
-.role-board_member { background: #27ae60; color: white; }
-.role-homeowner { background: rgba(255,255,255,0.2); color: white; }
-
-.logout-btn {
-  font-size: 0.85rem;
-  padding: 6px 14px;
-}
+.role-admin        { background: var(--accent); color: var(--primary); }
+.role-board_member { background: #38a169; color: white; }
+.role-homeowner    { background: rgba(255,255,255,0.15); color: white; }
 
 .plan-badge {
   font-size: 0.65rem;
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 3px 9px;
+  border-radius: 20px;
   font-weight: 700;
   letter-spacing: 0.5px;
   color: white;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .upgrade-btn {
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 4px 12px;
-  background: #f0a500;
-  color: #1e3a5f;
+  padding: 5px 13px;
+  background: var(--accent);
+  color: var(--primary);
   border-radius: 20px;
   text-decoration: none;
   white-space: nowrap;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: -0.1px;
 }
 
 .upgrade-btn:hover {
-  opacity: 0.9;
+  opacity: 0.88;
+  transform: translateY(-1px);
+  text-decoration: none;
 }
 
+.logout-btn {
+  font-size: 0.82rem;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.85);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,0.18);
+  color: white;
+}
+
+/* ---- Mobile ---- */
 .hamburger {
   display: none;
   background: none;
   border: none;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
 }
 
-@media (max-width: 768px) {
-  .hamburger { display: block; }
+.hamburger:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+@media (max-width: 900px) {
+  .hamburger { display: flex; align-items: center; justify-content: center; }
 
   .nav-links {
     display: none;
@@ -120,12 +164,19 @@
     right: 0;
     background: var(--primary);
     flex-direction: column;
-    padding: 12px;
-    gap: 4px;
+    padding: 10px 16px 16px;
+    gap: 2px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
   }
 
   .nav-links.open { display: flex; }
 
+  .nav-links a {
+    padding: 10px 14px;
+  }
+
   .navbar-user .user-name,
-  .navbar-user .role-badge { display: none; }
+  .navbar-user .role-badge,
+  .navbar-user .plan-badge { display: none; }
 }
