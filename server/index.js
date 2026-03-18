@@ -45,10 +45,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Connect to MongoDB (use in-memory server if no URI provided)
+// Connect to MongoDB (use in-memory server in dev if no URI provided)
 async function startServer() {
   let uri = process.env.MONGODB_URI;
   if (!uri) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('MONGODB_URI environment variable is required in production');
+    }
     const { MongoMemoryServer } = require('mongodb-memory-server');
     const mongod = await MongoMemoryServer.create();
     uri = mongod.getUri();
