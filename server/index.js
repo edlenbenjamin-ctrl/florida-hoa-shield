@@ -17,9 +17,15 @@ const subscriptionRoutes = require('./routes/subscription');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
-  .split(',')
-  .map((o) => o.trim());
+const defaultOrigins = [
+  'http://localhost:3000',
+  'https://florida-hoa-shield.vercel.app',
+  'https://floridahoashield.com',
+  'https://www.floridahoashield.com',
+];
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((o) => o.trim())
+  : defaultOrigins;
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // Stripe webhooks need raw body — mount before express.json()
