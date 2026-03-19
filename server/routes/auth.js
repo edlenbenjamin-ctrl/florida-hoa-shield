@@ -42,7 +42,10 @@ router.post(
 
       const validPlans = ['starter', 'growth', 'pro'];
       const selectedPlan = validPlans.includes(plan) ? plan : 'starter';
-      const user = await User.create({ name, email, password, unit, phone, plan: selectedPlan, subscriptionStatus: 'trialing' });
+      // First registered user in the system becomes the HOA admin
+      const adminExists = await User.findOne({ role: 'admin' });
+      const role = adminExists ? 'homeowner' : 'admin';
+      const user = await User.create({ name, email, password, unit, phone, plan: selectedPlan, subscriptionStatus: 'trialing', role });
       const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
       });
@@ -87,6 +90,28 @@ router.get('/me', authMiddleware, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// PUT /api/auth/change-password
+router.put('/change-password', authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'New password must be at least 8 characters' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) return res.status(401).json({ message: 'Current password is incorrect' });
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: 'Password updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

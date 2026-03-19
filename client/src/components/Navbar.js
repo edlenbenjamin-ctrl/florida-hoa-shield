@@ -60,7 +60,9 @@ const Navbar = () => {
       </ul>
 
       <div className="navbar-user">
-        <span className="user-name">{user?.name}</span>
+        <Link to="/profile" className="user-name" style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'none' }} title="My Profile">
+          {user?.name}
+        </Link>
         <span className={`role-badge role-${user?.role}`}>{user?.role?.replace('_', ' ')}</span>
         {plan && (
           <span

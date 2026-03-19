@@ -14,6 +14,7 @@ import Voting from './pages/Voting';
 import Payments from './pages/Payments';
 import Pricing from './pages/Pricing';
 import Landing from './pages/Landing';
+import Profile from './pages/Profile';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -49,6 +50,7 @@ function AppRoutes() {
           <Route path="/payments" element={<PrivateRoute><Payments /></PrivateRoute>} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/subscription/upgrade" element={<PrivateRoute><Pricing /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         </Routes>
       </main>
     </>

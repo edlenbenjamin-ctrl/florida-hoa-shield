@@ -32,9 +32,17 @@ router.put('/:id', authMiddleware, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
     const { name, phone, unit } = req.body;
+    const update = { name, phone, unit };
+    // Admins can also update role and voting rights
+    const isAdmin = req.user.role === 'admin' || req.user.role === 'board_member';
+    if (isAdmin) {
+      const { role, votingRights } = req.body;
+      if (role) update.role = role;
+      if (votingRights !== undefined) update.votingRights = votingRights;
+    }
     const member = await User.findByIdAndUpdate(
       req.params.id,
-      { name, phone, unit },
+      update,
       { new: true, runValidators: true }
     ).select('-password');
     if (!member) return res.status(404).json({ message: 'Member not found' });
