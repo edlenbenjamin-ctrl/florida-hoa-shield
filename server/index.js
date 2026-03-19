@@ -55,24 +55,15 @@ app.get('/api/health', (req, res) => {
 async function startServer() {
   let uri = process.env.MONGODB_URI;
   if (!uri) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('');
-      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.error('  MISSING ENVIRONMENT VARIABLE: MONGODB_URI');
-      console.error('  To fix this in Render:');
-      console.error('  1. Go to your Render dashboard → florida-hoa-shield-api');
-      console.error('  2. Click "Environment" tab');
-      console.error('  3. Add MONGODB_URI = your MongoDB Atlas connection string');
-      console.error('  4. Also set: JWT_SECRET, CLIENT_URL, SERVER_URL');
-      console.error('  MongoDB Atlas free tier: https://www.mongodb.com/atlas');
-      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.error('');
-      throw new Error('MONGODB_URI environment variable is required in production');
-    }
     const { MongoMemoryServer } = require('mongodb-memory-server');
     const mongod = await MongoMemoryServer.create();
     uri = mongod.getUri();
-    console.log('Using in-memory MongoDB (no MONGODB_URI set)');
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('WARNING: MONGODB_URI not set — using in-memory database. Data will not persist across restarts.');
+      console.warn('Set MONGODB_URI in Render dashboard to use a persistent MongoDB Atlas database.');
+    } else {
+      console.log('Using in-memory MongoDB (no MONGODB_URI set)');
+    }
   }
   await mongoose.connect(uri);
   console.log('Connected to MongoDB');
