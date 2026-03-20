@@ -4,6 +4,12 @@ const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// Auto-generate JWT_SECRET if not set (tokens will invalidate on restart)
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = require('crypto').randomBytes(64).toString('hex');
+  console.warn('WARNING: JWT_SECRET not set — auto-generated. Set JWT_SECRET in environment for persistent tokens.');
+}
+
 const authRoutes = require('./routes/auth');
 const memberRoutes = require('./routes/members');
 const violationRoutes = require('./routes/violations');
